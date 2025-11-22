@@ -1,0 +1,41 @@
+# --- CLion & CMake (Build Folders) ---
+# O CLion gera estas pastas automaticamente para compilar o código
+cmake-build-debug/
+cmake-build-release/
+cmake-build-*/
+CMakeFiles/
+CMakeCache.txt
+CMakeScripts/
+cmake_install.cmake
+Makefile
+
+# --- JetBrains IDE (Configurações do Utilizador) ---
+# Contém configurações do teu workspace local que não devem ir para o repo
+.idea/
+
+# --- Ficheiros Compilados e Objetos ---
+*.o
+*.obj
+*.so
+*.dylib
+*.dll
+*.a
+*.lib
+
+# --- Executáveis ---
+# No Windows
+*.exe
+# No Linux/Mac (ficheiros sem extensão ou .out)
+*.out
+*.app
+
+# --- Ficheiros Temporários e Logs ---
+*.log
+*.tmp
+*.swp
+
+# --- Sistema Operativo (Lixo) ---
+.DS_Store
+Thumbs.db
+ehthumbs.db
+Desktop.ini
