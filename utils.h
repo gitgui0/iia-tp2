@@ -17,6 +17,7 @@ typedef struct {
     int nSel; // numero de selecionados ( '1' )
 } Solucao;
 
+
 void printSol(Solucao* sol, int nC);
 
 void geraSolucaoInicial(Solucao* s, int m, int nC);

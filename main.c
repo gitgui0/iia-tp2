@@ -7,6 +7,8 @@ int leInfo(int* nC, int* m, float distancias[MAX_C][MAX_C]) {
     printf("Insira o ficheiro a utilizar: ");
     scanf("%s",fich);
 
+    printf("\nficherio. %s",fich);
+
     FILE *f = fopen(fich, "r");
 
     if (f == NULL) {
@@ -27,9 +29,10 @@ int leInfo(int* nC, int* m, float distancias[MAX_C][MAX_C]) {
 
     while (fscanf(f, "%s %s %f", no1, no2, &dist) == 3) {
         // 'no1' e string "e1", no1[1] e o '1' da string
-        //truqe tablea ascii
-        int id1 = no1[1] - 49;
-        int id2 = no2[1] - 49;
+
+        int id1 = atoi(&no1[1]) - 1;
+        int id2 = atoi(&no2[1]) - 1;
+
 
         if (id1 >= 0 && id1 < *nC && id2 >= 0 && id2 < *nC) {
             distancias[id1][id2] = dist;
