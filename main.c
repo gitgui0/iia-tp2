@@ -1,73 +1,77 @@
 #include "funcao.h"
+#include "algoritmo.h"
 
-//0->certo, 1->erro
-int leInfo(int* nC, int* m, float distancias[MAX_C][MAX_C]) {
-    char fich[100];
-
-    printf("Insira o ficheiro a utilizar: ");
-    scanf("%s",fich);
-
-    printf("\nficherio. %s",fich);
-
-    FILE *f = fopen(fich, "r");
-
-    if (f == NULL) {
-        printf("Esse ficheiro nao existe");
-        return 1;
-    }
-
-    fscanf(f,"%d %d\n",nC,m);
-
-    for(int i=0; i<*nC; i++)
-        for(int j=0; j<*nC; j++)
-            distancias[i][j] = 0.0;
-
-
-    // Le as arestas (e1 e2 50.1...)
-    char no1[10], no2[10];
-    float dist;
-
-    while (fscanf(f, "%s %s %f", no1, no2, &dist) == 3) {
-        // 'no1' e string "e1", no1[1] e o '1' da string
-
-        int id1 = atoi(&no1[1]) - 1;
-        int id2 = atoi(&no2[1]) - 1;
-
-
-        if (id1 >= 0 && id1 < *nC && id2 >= 0 && id2 < *nC) {
-            distancias[id1][id2] = dist;
-            distancias[id2][id1] = dist; // A matriz e simetrica
-        }
-    }
-
-    fclose(f);
-
-    // so para testar
-    // mostraMatrizDistancias(distancias,*nC);
-
-    return 0;
-}
 
 
 int main() {
-    int nC,m;
-    float distancias[MAX_C][MAX_C];
+    int nC,m,numRuns=-1, numIter;
+    float distancias[MAX_C][MAX_C], mbf=0;
+    Solucao* sol;
+    Solucao* melhorSol;
 
     if (leInfo(&nC,&m,distancias)!=0) {
         printf("\nErro o ler informacoes.");
         return 1;
     }
 
+    srand(time(NULL));
+
     // GERAR SOLUCAO
 
-    Solucao sol;
-    srand(time(NULL));
-    geraSolucaoInicial(&sol, m, nC);
+    sol = malloc(sizeof(Solucao));
+    if (sol == NULL) {
+        printf("Erro ao alocar solucao.\n");
+        return 1;
+    }
 
-    printSol(&sol,nC);
-    float q = devolveQualidade(&sol,distancias,nC,m);
-    printf("\nQualidade: %.2f \n",q);
+    melhorSol = malloc(sizeof(Solucao));
+    if (melhorSol == NULL) {
+        free(sol);
+        printf("Erro ao alocar melhorSol.\n");
+        return 1;
+    }
 
+    do {
+        printf("\nNumero de runs -> ");
+        scanf("%d",&numRuns);
+    }while (numRuns<=0);
+
+    do {
+        printf("\nNumero de iteracoes para o algoritmo trepa-colinas -> ");
+        scanf("%d",&numIter);
+    }while (numIter<=0);
+
+    printf("\n---ALGORTIMO TREPA-COLINAS---\n");
+
+    melhorSol->media = -1; // so para comecar
+
+    for (int i = 0; i < numRuns; i++) {
+        geraSolucaoInicial(sol, m, nC);
+        sol->media = devolveMedia(sol,distancias,nC,m);
+        sol->nSel = m; // PARA O TREPA COLINAS
+
+        if (trepaColinas(sol,distancias,m,nC,numIter)!=0) {
+            printf("ERRO NO ALGORITMO TREPA-COLINAS\n");
+            return 1;
+        }
+        printf("\nRepeticao %d\n",i+1);
+        printSol(sol,nC);
+        printf("\nMedia de Distancias: %.2f \n",sol->media);
+
+        mbf+=sol->media;
+
+        if (sol->media > melhorSol->media) {
+            copiaSolucao(melhorSol,sol, nC);
+        }
+    }
+
+    printf("\n----MELHOR SOLUCAO ENCONTRADA----\n");
+    printSol(melhorSol,nC);
+    printf("\nMedia de Distancias: %.2f \n",melhorSol->media);
+    printf("\nMBF: %.2f\n",mbf/(float)numRuns);
+
+    free(sol);
+    free(melhorSol);
 
     return 0;
 }

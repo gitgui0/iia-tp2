@@ -24,7 +24,11 @@ void geraSolucaoInicial(Solucao* s, int m, int nC);
 
 void mostraMatrizDistancias(float distancias[MAX_C][MAX_C], int nC);
 
+int leInfo(int* nC, int* m, float distancias[MAX_C][MAX_C]);
 
+int geraNumEntre(int inf, int sup);
+
+void copiaSolucao(Solucao* destino, Solucao* origem, int nC);
 
 
 #endif //UTILS_H
