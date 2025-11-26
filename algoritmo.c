@@ -29,8 +29,37 @@ void geraVizinho(Solucao *atual, Solucao* nova, int nC, int m){
     nova->nSel = m;
 }
 
+
+// escolhe um local aleatorio e inverte
+void geraVizinhoBitFlip(Solucao *atual, Solucao* nova, int nC, int m) {
+    copiaSolucao(nova, atual, nC);
+
+    // escolhe indice aleatorio
+    int r = geraNumEntre(0, nC - 1);
+    int pos2;
+    do {
+        pos2 = geraNumEntre(0, nC - 1);
+    }while (pos2 == r);
+
+    //Inverte
+    if (nova->sel[r] == 1) {
+        nova->sel[r] = 0;
+        nova->nSel--; // Ficou com m-1 (Inválida!)
+    } else {
+        nova->sel[r] = 1;
+        nova->nSel++; // Ficou com m+1 (Inválida!)
+    }
+    if (nova->sel[pos2] == 1) {
+        nova->sel[pos2] = 0;
+        nova->nSel--; // Ficou com m-1 (Inválida!)
+    } else {
+        nova->sel[pos2] = 1;
+        nova->nSel++; // Ficou com m+1 (Inválida!)
+    }
+}
+
 // 1 -> erro, 0 -> tudo certo
-int trepaColinas(Solucao *atual, float distancias[MAX_C][MAX_C],int m, int nC, int numIter){
+int trepaColinas(Solucao *atual, float distancias[MAX_C][MAX_C],int m, int nC, int numIter,float pen,int *countValido){
     Solucao* vizinho;
 
     vizinho = malloc(sizeof(Solucao));
@@ -40,11 +69,13 @@ int trepaColinas(Solucao *atual, float distancias[MAX_C][MAX_C],int m, int nC, i
     }
 
     //Avalia solucao inicial
-    atual->media = devolveMedia(atual,distancias,nC,m);
+    atual->media = calculaPenalidade(atual,distancias,nC,m,pen);
 
     for(int i = 0; i < numIter; i++){
-        geraVizinho(atual,vizinho,nC, m);
-        vizinho->media = devolveMedia(vizinho,distancias,nC,m);
+        geraVizinhoBitFlip(atual,vizinho,nC, m);
+        if (vizinho->nSel == m)
+            (*countValido)++;
+        vizinho->media = calculaPenalidade(vizinho,distancias,nC,m,pen);
 
         if(vizinho->media > atual->media){
             // Copia a solucao vizinho para a solucao atual, incluindo a media de distancias

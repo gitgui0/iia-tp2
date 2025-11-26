@@ -30,5 +30,9 @@ int geraNumEntre(int inf, int sup);
 
 void copiaSolucao(Solucao* destino, Solucao* origem, int nC);
 
+float calculaMaxDistancia(float distancias[MAX_C][MAX_C], int nC);
+
+float calculaValorPenalizacao(int nSel, int m, float pen);
+void mostraRelatorioPenalizacao(float penAplicada, float fitnessBase);
 
 #endif //UTILS_H

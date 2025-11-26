@@ -124,3 +124,31 @@ void copiaSolucao(Solucao* destino, Solucao* origem, int nC) {
     destino->media = origem->media;
     destino->nSel = origem->nSel;
 }
+
+float calculaMaxDistancia(float distancias[MAX_C][MAX_C], int nC) {
+    float max = 0.0;
+    for (int i = 0; i < nC; i++) {
+        for (int j = i + 1; j < nC; j++) {
+            if (distancias[i][j] > max) {
+                max = distancias[i][j];
+            }
+        }
+    }
+    return max;
+}
+
+float calculaValorPenalizacao(int nSel, int m, float valPenalidade) {
+    if (nSel != m) {
+        return abs(nSel - m) * valPenalidade;
+    }
+    return 0.0f;
+}
+
+void mostraRelatorioPenalizacao(float penAplicada, float fitnessBase) {
+    float percentagem = 0.0f;
+
+    if (fitnessBase > 0.0001f) {
+        percentagem = (penAplicada / fitnessBase) * 100.0f;
+    }
+    printf("Percentagem de invalidos (%.2f%%)", percentagem);
+}
