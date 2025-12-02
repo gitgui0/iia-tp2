@@ -152,3 +152,8 @@ void mostraRelatorioPenalizacao(float penAplicada, float fitnessBase) {
     }
     printf("Percentagem de invalidos (%.2f%%)", percentagem);
 }
+
+
+float random_0_1() {
+    return (float)rand() / (float)RAND_MAX;
+}

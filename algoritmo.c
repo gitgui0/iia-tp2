@@ -1,6 +1,7 @@
 
 #include "algoritmo.h"
 #include "funcao.h"
+#include "math.h"
 
 //Troca 1 bit por outro. Mantem a validade da solucao
 void geraVizinho(Solucao *atual, Solucao* nova, int nC, int m){
@@ -59,7 +60,7 @@ void geraVizinhoBitFlip(Solucao *atual, Solucao* nova, int nC, int m) {
 }
 
 // 1 -> erro, 0 -> tudo certo
-int trepaColinas(Solucao *atual, float distancias[MAX_C][MAX_C],int m, int nC, int numIter,float pen,int *countValido){
+int trepaColinas(Solucao *atual, float distancias[MAX_C][MAX_C],int m, int nC, int* numIter,float pen,int *countValido){
     Solucao* vizinho;
 
     vizinho = malloc(sizeof(Solucao));
@@ -71,7 +72,7 @@ int trepaColinas(Solucao *atual, float distancias[MAX_C][MAX_C],int m, int nC, i
     //Avalia solucao inicial
     atual->media = calculaPenalidade(atual,distancias,nC,m,pen);
 
-    for(int i = 0; i < numIter; i++){
+    for(int i = 0; i < *numIter; i++){
         geraVizinhoBitFlip(atual,vizinho,nC, m);
         if (vizinho->nSel == m)
             (*countValido)++;
@@ -81,8 +82,46 @@ int trepaColinas(Solucao *atual, float distancias[MAX_C][MAX_C],int m, int nC, i
             // Copia a solucao vizinho para a solucao atual, incluindo a media de distancias
             copiaSolucao(atual,vizinho,nC);
         }
-        //else?
     }
+
+    free(vizinho);
+    return 0;
+}
+
+int recristalizacao(Solucao *atual, float distancias[MAX_C][MAX_C], int m, int nC, int* numIter,
+                       float pen, int* countValidos, float temperatura, float resfriamento, float temperaturaFinal){
+    Solucao *vizinho, *melhorGlobal;
+
+	vizinho = malloc(sizeof(Solucao));
+    if(vizinho == NULL){
+      printf("Erro ao alocar nova solucao.");
+      return 1;
+    }
+
+    int k = *numIter;
+
+    while(temperatura > temperaturaFinal){
+        for(int i = 0; i < k; i++){
+          	geraVizinhoBitFlip(atual,vizinho,nC, m);
+            if (vizinho->nSel == m)
+                (*countValidos)++;
+            vizinho->media = calculaPenalidade(vizinho,distancias,nC,m,pen);
+
+            //Avalia solucao inicial
+    		atual->media = calculaPenalidade(atual,distancias,nC,m,pen);
+
+            if(vizinho->media > atual->media){
+                copiaSolucao(atual, vizinho, nC);
+            } else {
+                if(random_0_1() < exp((vizinho->media - atual->media) / temperatura)){
+                    copiaSolucao(atual, vizinho, nC);
+                }
+            }
+        	(*numIter)++;
+        }
+        temperatura*=resfriamento;
+    }
+
 
     free(vizinho);
     return 0;

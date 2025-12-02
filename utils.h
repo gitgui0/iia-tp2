@@ -35,4 +35,6 @@ float calculaMaxDistancia(float distancias[MAX_C][MAX_C], int nC);
 float calculaValorPenalizacao(int nSel, int m, float pen);
 void mostraRelatorioPenalizacao(float penAplicada, float fitnessBase);
 
+float random_0_1();
+
 #endif //UTILS_H
