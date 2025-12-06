@@ -1,0 +1,3 @@
+TempInicial = 1000
+TempFinal = 1
+Arrefecimento = 0.99

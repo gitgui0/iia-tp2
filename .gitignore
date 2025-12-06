@@ -39,3 +39,5 @@ Makefile
 Thumbs.db
 ehthumbs.db
 Desktop.ini
+
+CMakeLists.txt

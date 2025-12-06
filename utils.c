@@ -42,7 +42,7 @@ int leInfo(int* nC, int* m, float distancias[MAX_C][MAX_C]) {
     char fich[100];
     char escolha[100];
 
-    printf("Insira o ficheiro a utilizar\n");
+    printf("\n| Escolha o Ficheiro |\n");
     printf("\n5-tourism_5.txt");
     printf("\n20-tourism_20.txt");
     printf("\n50-tourism_50.txt");
@@ -72,7 +72,7 @@ int leInfo(int* nC, int* m, float distancias[MAX_C][MAX_C]) {
         strcpy(fich,escolha);
 
 
-    printf("\nficheiro: %s\n",fich);
+    printf("ficheiro: %s\n",fich);
 
     FILE *f = fopen(fich, "r");
 

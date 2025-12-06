@@ -112,12 +112,11 @@ int recristalizacao(Solucao *atual, float distancias[MAX_C][MAX_C], int m, int n
             //Avalia solucao inicial
 
             if(vizinho->media > atual->media){
-                printf("Melhorou: %.2f -> %.2f\n", atual->media, vizinho->media);
+                // printf("Melhorou: %.2f -> %.2f\n", atual->media, vizinho->media);
                 copiaSolucao(atual, vizinho, nC);
             } else {
                 if(random_0_1() < exp((vizinho->media - atual->media) / temperatura)){
-                    printf("[ACEITOU PIOR] Temp: %.2f | Atual: %.2f | Vizinho: %.2f\n",
-                           temperatura, atual->media, vizinho->media);
+                    // printf("[ACEITOU PIOR] Temp: %.2f | Atual: %.2f | Vizinho: %.2f\n",temperatura, atual->media, vizinho->media);
                     copiaSolucao(atual, vizinho, nC);
                 }
             }

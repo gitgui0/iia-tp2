@@ -1,7 +1,9 @@
-    #include "funcao.h"
-    #include "algoritmo.h"
+#include "funcao.h"
+#include "algoritmo.h"
+#include "proc.h"
 
-
+#include <windows.h>
+#include <unistd.h>
 
 int main() {
     int nC,m,numRuns=-1, numIter;
@@ -11,13 +13,29 @@ int main() {
     Solucao* sol;
     Solucao* melhorSol;
 
-    float temperatura, arrefecimento,temperaturaFinal;
+    float temperatura = 1000, arrefecimento = 0.99, temperaturaFinal = 1;
 
     Evolutivo ev;
+
+    /*
+        TIPO RECOMBINACAO - 1 - 1Ponto, 2 - 2Pontos, 3 - Uniforme
+        TIPO MUTACAO - 1 - BitFlip, 2 - Troca
+        TRATAMENTO INVALIDOS (0-Penalizacao, 1-Rep. Aleatoria, 2-Rep. Heuristica)
+    */
+
+    ev.popsize = 50;
+    ev.pmt = 0.01;
+    ev.prc = 0.7;
+    ev.tsize = 2;
+    ev.tipoRecombinacao  = 1;
+    ev.tipoMutacao = 1;
+    ev.tipoReparacao = 0;
 
     Solucao *pop = NULL;
     Solucao *pais = NULL;
     Solucao *filhos = NULL;
+
+    printf("\n| TP IIA - Problema de Optimizacao |\n");
 
     if (leInfo(&nC,&m,distancias)!=0) {
         printf("\nErro o ler informacoes.");
@@ -46,55 +64,35 @@ int main() {
         return 1;
     }
 
+    printf("\n| Numero de Runs e de Iteracoes |\n");
+
     do {
         printf("\nNumero de runs -> ");
         scanf("%d",&numRuns);
     }while (numRuns<=0);
 
     do {
-        printf("\nNumero de iteracoes para o algoritmo -> ");
+        printf("Numero de iteracoes para o algoritmo -> ");
         scanf("%d",&numIter);
     }while (numIter<=0);
 
     while (algoritmoEscolhido != 'r' && algoritmoEscolhido != 't' && algoritmoEscolhido != 'e') {
-        printf("\nLetra do algoritmo a usar\nt-trepa colinas\tr-recristalizacao simulada\t e-Evolutivo -> ");
+        printf("\n| Escolha o Algoritmo |\n\nt-Trepa colinas\nr-Recristalizacao Simulada\ne-Evolutivo\n>");
         scanf(" %c",&algoritmoEscolhido);
     }
 
 
+
     if (algoritmoEscolhido=='r') {
-        printf("Temperatura Inicial para Recristalizacao Simulada->");
-        scanf("%f",&temperatura);
-
-        printf("Temperatura Final para Recristalizacao Simulada->");
-        scanf("%f",&temperaturaFinal);
-        do {
-            printf("Fator de arrefecimento para Recristalizacao Simulada->");
-            scanf("%f",&arrefecimento);
-        }while (arrefecimento<= 0 || arrefecimento >= 1);
+        if (lerParametrosRecristalizacao(&temperatura,&arrefecimento,&temperaturaFinal) == 1) {
+            printf("\nErro a ler os parametros para recristalizacao.");
+            return 1;
+        }
     }else if (algoritmoEscolhido == 'e'){
-        printf("\n--- CONFIGURACAO EVOLUTIVO ---\n");
-        printf("Tamanho da Populacao (ex: 50, 100): ");
-        scanf("%d", &ev.popsize);
-
-        printf("Prob. Mutacao (ex: 0.01): ");
-        scanf("%f", &ev.pmt);
-
-        printf("Prob. Recombinacao (ex: 0.7): ");
-        scanf("%f", &ev.prc);
-
-        printf("Tamanho Torneio (ex: 2): ");
-        scanf("%d", &ev.tsize);
-
-        printf("\nTipo Recombinacao (1-1Ponto, 2-2Pontos, 3-Uniforme): ");
-        scanf("%d", &ev.tipoRecombinacao);
-
-        printf("Tipo Mutacao (1-BitFlip, 2-Troca): ");
-        scanf("%d", &ev.tipoMutacao);
-
-        printf("Tratamento Invalidos (0-Penalizacao, 1-Rep. Aleatoria, 2-Rep. Heuristica): ");
-        scanf("%d", &ev.tipoReparacao);
-        ev.numGenerations = numIter;
+        if (lerParametrosEvolutivo(&ev) == 1) {
+            printf("\nErro a ler os parametros para o evolutivo.");
+            return 1;
+        }
 
         pop = malloc(sizeof(Solucao) * ev.popsize);
         pais = malloc(sizeof(Solucao) * ev.popsize);
@@ -105,9 +103,43 @@ int main() {
     melhorSol->media = -1; // so para comecar
 
     if (algoritmoEscolhido == 't') printf("\n---ALGORTIMO TREPA COLINAS ---\n");
-    else if (algoritmoEscolhido == 'r') printf("\n---ALGORTIMO RECRISTALIZACAO SIMULADA---\n");
-    else if (algoritmoEscolhido == 'e') printf("\n--- ALGORITMO EVOLUTIVO ---\n");
+    else if (algoritmoEscolhido == 'r') printf("\n---ALGORTIMO RECRISTALIZACAO SIMULADA---\nParametros: \n\nTempInicial = %.5f \nArrefecimento = %.5f \nTempFinal = %.5f\n\n",temperatura,arrefecimento,temperaturaFinal);
+    else if (algoritmoEscolhido == 'e') {
+        printf("\n--- ALGORITMO EVOLUTIVO ---\nParametros: \n\n");
+        printf("Tamanho Populacao = %d\n",ev.popsize);
+        printf("Prob Mutacao = %f\n",ev.pmt);
+        printf("Prob Recombinacao = %f\n",ev.prc);
+        printf("Tamanho Torneio = %d\n\n",ev.tsize );
 
+        char rec[30];
+        char mut[30];
+        char inv[30];
+
+        if (ev.tipoRecombinacao == 1)
+            strcpy(rec,"1 Ponto");
+        if (ev.tipoRecombinacao == 2)
+            strcpy(rec,"2 Pontos");
+        if (ev.tipoRecombinacao == 3)
+            strcpy(rec,"Uniforme");
+
+        if (ev.tipoMutacao == 1)
+            strcpy(mut,"Bitflip");
+        if (ev.tipoMutacao == 2)
+            strcpy(mut,"Troca");
+
+        if (ev.tipoReparacao == 0)
+            strcpy(inv,"Penalizacao");
+        if (ev.tipoReparacao == 1)
+            strcpy(inv,"Rep. Aleatoria");
+        if (ev.tipoReparacao == 2)
+            strcpy(inv,"Rep. Heuristica");
+
+        printf("Tipo Recombinacao - %s\n",rec );
+        printf("Tipo Mutacao - %s\n",mut );
+        printf("Tratamento Invalidos - %s\n\n",inv );
+    }
+
+    sleep(2);
     for (int i = 0; i < numRuns; i++) {
         geraSolucaoInicial(sol, m, nC);
         int countValidos = 1;
@@ -115,8 +147,6 @@ int main() {
         int numIterTemp = numIter; // a recristalizacao pode muda lo
 
         if (algoritmoEscolhido == 't') {
-
-
             if (trepaColinas(sol,distancias,m,nC,&numIterTemp,pen,&countValidos)!=0) {
                 printf("ERRO NO ALGORITMO TREPA-COLINAS\n");
                 return 1;
