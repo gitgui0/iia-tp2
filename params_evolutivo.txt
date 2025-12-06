@@ -5,7 +5,9 @@ Tamanho Torneio = 2
 Tipo Recombinacao = 1
 Tipo Mutacao = 1
 Tratamento Invalidos = 0
+Metodo Selecao = 1
 
 TIPO RECOMBINACAO - 1 - 1Ponto, 2 - 2Pontos, 3 - Uniforme
 TIPO MUTACAO - 1 - BitFlip, 2 - Troca
 TRATAMENTO INVALIDOS (0-Penalizacao, 1-Rep. Aleatoria, 2-Rep. Heuristica)
+METODO SELECAO 1- TORNEIO 2- ROLETA

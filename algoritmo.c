@@ -195,7 +195,7 @@ void crossover_uniforme(Solucao *pais, int popsize, int nC, float pr, Solucao *f
     for (int i = 0; i < popsize; i += 2) {
         if (random_0_1() < pr) {
             for (int j = 0; j < nC; j++) {
-                if (random_0_1() < 0.5) { // Troca 50% das vezes
+                if (random_0_1() < 0.5) { // 50% de troca
                     filhos[i].sel[j] = pais[i+1].sel[j];
                     filhos[i+1].sel[j] = pais[i].sel[j];
                 } else {
@@ -225,12 +225,14 @@ void mutacao_troca(Solucao *filhos, int popsize, int nC, float pm) {
     for (int i = 0; i < popsize; i++) {
         if (random_0_1() < pm) {
             int p1, p2;
-            // Tenta encontrar um 0 e um 1 para trocar (tenta 100x para não encravar)
+            // Tenta encontrar um 0 e um 1 para trocar (tenta 100x para cada um para não encravar)
             int count = 0;
             do {
                 p1 = geraNumEntre(0, nC-1);
                 count++;
             } while (filhos[i].sel[p1] != 0 && count < 100);
+
+            count = 0;
             do {
                 p2 = geraNumEntre(0, nC-1);
                 count++;
@@ -268,23 +270,30 @@ void geraSolucaoEvolutivo(Solucao *melhorGlobal, float distancias[MAX_C][MAX_C],
     for (int g = 0; g < ev.numGenerations; g++) {
         torneio(pop, ev.popsize, ev.tsize, pais);
 
+        // Operadores Geneticos
+
+
+        // Crossover
         switch(ev.tipoRecombinacao) {
             case 1: crossover_1ponto(pais, ev.popsize, nC, ev.prc, filhos); break;
             case 2: crossover_2pontos(pais, ev.popsize, nC, ev.prc, filhos); break;
             default: crossover_uniforme(pais, ev.popsize, nC, ev.prc, filhos); break;
         }
 
+        // Mutacao
+        // 1 - troca ou 2 -bitflip
         if (ev.tipoMutacao == 2)
             mutacao_troca(filhos, ev.popsize, nC, ev.pmt);
         else
             mutacao_bitflip(filhos, ev.popsize, nC, ev.pmt);
 
-        // reparar e calcula fitness
+        // Reparacao e avaliacao dos filhos
         avaliaPopulacao(filhos, ev.popsize, distancias, nC, m, ev.tipoReparacao);
 
         // Atualiza melhor da run com a nova geração
         for (int i = 0; i < ev.popsize; i++) {
             if (filhos[i].media > best_run.media) {
+                // se for penalizacao nao copia
                 if(ev.tipoReparacao == 0 && filhos[i].nSel != m)
                     continue;
                 copiaSolucao(&best_run, &filhos[i], nC);
@@ -296,5 +305,7 @@ void geraSolucaoEvolutivo(Solucao *melhorGlobal, float distancias[MAX_C][MAX_C],
             copiaSolucao(&pop[i], &filhos[i], nC);
         }
     }
+
+    // Copia para melhorGlobal para mostrar no main
     copiaSolucao(melhorGlobal, &best_run, nC);
 }

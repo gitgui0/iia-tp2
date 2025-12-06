@@ -21,6 +21,7 @@ int main() {
         TIPO RECOMBINACAO - 1 - 1Ponto, 2 - 2Pontos, 3 - Uniforme
         TIPO MUTACAO - 1 - BitFlip, 2 - Troca
         TRATAMENTO INVALIDOS (0-Penalizacao, 1-Rep. Aleatoria, 2-Rep. Heuristica)
+        METODO SELECAO 1- TORNEIO 2- ROLETA
     */
 
     ev.popsize = 50;
@@ -30,6 +31,7 @@ int main() {
     ev.tipoRecombinacao  = 1;
     ev.tipoMutacao = 1;
     ev.tipoReparacao = 0;
+    ev.metodoSelecao = 1;
 
     Solucao *pop = NULL;
     Solucao *pais = NULL;
@@ -114,6 +116,7 @@ int main() {
         char rec[30];
         char mut[30];
         char inv[30];
+        char sel[30];
 
         if (ev.tipoRecombinacao == 1)
             strcpy(rec,"1 Ponto");
@@ -134,9 +137,17 @@ int main() {
         if (ev.tipoReparacao == 2)
             strcpy(inv,"Rep. Heuristica");
 
+        if (ev.metodoSelecao == 1)
+            strcpy(sel,"Torneio");
+        if (ev.metodoSelecao == 2)
+            strcpy(sel,"Roleta");
+
         printf("Tipo Recombinacao - %s\n",rec );
         printf("Tipo Mutacao - %s\n",mut );
         printf("Tratamento Invalidos - %s\n\n",inv );
+        printf("Metodo de Selecao - %s\n\n",sel);
+
+        ev.numGenerations = numIter;
     }
 
     sleep(2);

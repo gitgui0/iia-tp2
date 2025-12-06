@@ -62,6 +62,7 @@ int lerParametrosEvolutivo(Evolutivo *ev){
     fscanf(f,"Tipo Recombinacao = %d\n",&ev->tipoRecombinacao );
     fscanf(f,"Tipo Mutacao = %d\n",&ev->tipoMutacao );
     fscanf(f,"Tratamento Invalidos = %d\n",&ev->tipoReparacao );
+    fscanf(f,"Metodo Selecao = %d\n",&ev->metodoSelecao );
 
     fclose(f);
   }

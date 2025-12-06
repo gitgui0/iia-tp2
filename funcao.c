@@ -31,6 +31,7 @@ float calculaPenalidade(Solucao* sol, float distancias[MAX_C][MAX_C], int nC, in
 }
 
 void reparaSolucaoAleatoria(Solucao *s, int m, int nC) {
+    printf("\nnsel antigo %d\n",s->nSel);
     s->nSel = 0;
     for(int i=0; i<nC; i++) {
         if(s->sel[i]) s->nSel++;
@@ -121,6 +122,7 @@ void avaliaPopulacao(Solucao *pop, int popsize, float distancias[MAX_C][MAX_C], 
             reparaSolucaoHeuristica(&pop[i], m, nC, distancias);
         }
 
+
         if (tipoReparacao == 0) {
             pop[i].nSel = 0;
             for(int k=0; k<nC; k++) if(pop[i].sel[k]) pop[i].nSel++;
@@ -130,5 +132,6 @@ void avaliaPopulacao(Solucao *pop, int popsize, float distancias[MAX_C][MAX_C], 
         else {
             pop[i].media = devolveMedia(&pop[i], distancias, nC, m);
         }
+
     }
 }

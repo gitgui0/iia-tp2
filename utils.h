@@ -28,6 +28,8 @@ typedef struct {
     int tipoRecombinacao;
     int tipoMutacao;
     int tipoReparacao;
+
+    int metodoSelecao;
 } Evolutivo;
 
 void printSol(Solucao* sol, int nC);
