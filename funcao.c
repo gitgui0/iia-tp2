@@ -34,7 +34,7 @@ void reparaSolucaoAleatoria(Solucao *s, int m, int nC) {
     s->nSel = 0;
     for(int i=0; i<nC; i++) {
         if(s->sel[i]) s->nSel++;
-    } // nao sei se rpecisa de recalcular nSel
+    } //Precisa de recalcular nSel
 
     while (s->nSel > m) { // Remove excesso
         int r = geraNumEntre(0, nC - 1);
@@ -67,9 +67,11 @@ void reparaSolucaoHeuristica(Solucao *s, int m, int nC, float distancias[MAX_C][
         for (int i = 0; i < nC; i++) {
             if (s->sel[i] == 1) {
                 float dist_sum = 0;
+                // Calcula a distancia de s->sel[i] de todos
                 for (int j = 0; j < nC; j++) {
                     if (i != j && s->sel[j] == 1) dist_sum += distancias[i][j];
                 }
+
                 if (dist_sum < menor_dist_total) {
                     menor_dist_total = dist_sum;
                     pior_idx = i;
@@ -91,6 +93,7 @@ void reparaSolucaoHeuristica(Solucao *s, int m, int nC, float distancias[MAX_C][
         for (int i = 0; i < nC; i++) {
             if (s->sel[i] == 0) {
                 float dist_sum = 0;
+                // Calcula a distancia de s->sel[i] de todos
                 for (int j = 0; j < nC; j++) {
                     if (s->sel[j] == 1) dist_sum += distancias[i][j];
                 }
