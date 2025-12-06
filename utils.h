@@ -18,6 +18,18 @@ typedef struct {
 } Solucao;
 
 
+typedef struct {
+    int popsize;
+    float pmt;
+    float prc;
+    int tsize;
+    int numGenerations;
+
+    int tipoRecombinacao;
+    int tipoMutacao;
+    int tipoReparacao;
+} Evolutivo;
+
 void printSol(Solucao* sol, int nC);
 
 void geraSolucaoInicial(Solucao* s, int m, int nC);
