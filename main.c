@@ -10,6 +10,7 @@ int main() {
     float distancias[MAX_C][MAX_C], mbf=0;
 
     char algoritmoEscolhido;
+    int algoritmoHibrido = 1, abordagemHibrido = 2;
     Solucao* sol;
     Solucao* melhorSol;
 
@@ -78,8 +79,8 @@ int main() {
         scanf("%d",&numIter);
     }while (numIter<=0);
 
-    while (algoritmoEscolhido != 'r' && algoritmoEscolhido != 't' && algoritmoEscolhido != 'e') {
-        printf("\n| Escolha o Algoritmo |\n\nt-Trepa colinas\nr-Recristalizacao Simulada\ne-Evolutivo\n>");
+    while (algoritmoEscolhido != 'r' && algoritmoEscolhido != 't' && algoritmoEscolhido != 'e' && algoritmoEscolhido != 'h') {
+        printf("\n| Escolha o Algoritmo |\n\nt-Trepa colinas\nr-Recristalizacao Simulada\ne-Evolutivo\nh-Hibrido\n>");
         scanf(" %c",&algoritmoEscolhido);
     }
 
@@ -93,6 +94,16 @@ int main() {
     }else if (algoritmoEscolhido == 'e'){
         if (lerParametrosEvolutivo(&ev) == 1) {
             printf("\nErro a ler os parametros para o evolutivo.");
+            return 1;
+        }
+
+        pop = malloc(sizeof(Solucao) * ev.popsize);
+        pais = malloc(sizeof(Solucao) * ev.popsize);
+        filhos = malloc(sizeof(Solucao) * ev.popsize);
+        if (!pop || !pais || !filhos) { printf("Erro memoria populacoes\n"); return 1; }
+    }else if (algoritmoEscolhido == 'h'){
+        if (lerParametrosHibrido(&ev,&algoritmoHibrido,&abordagemHibrido,&temperatura,&arrefecimento,&temperaturaFinal) == 1) {
+            printf("\nErro a ler os parametros para o hibrido.");
             return 1;
         }
 
@@ -148,6 +159,57 @@ int main() {
         printf("Metodo de Selecao - %s\n\n",sel);
 
         ev.numGenerations = numIter;
+    }else if (algoritmoEscolhido == 'h') {
+        printf("\n--- ALGORITMO HIBRIDO ---\nParametros: \n\n");
+        printf("Tamanho Populacao = %d\n",ev.popsize);
+        printf("Prob Mutacao = %f\n",ev.pmt);
+        printf("Prob Recombinacao = %f\n",ev.prc);
+        printf("Tamanho Torneio = %d\n\n",ev.tsize );
+
+
+        char rec[30];
+        char mut[30];
+        char inv[30];
+        char sel[30];
+
+        if (ev.tipoRecombinacao == 1)
+            strcpy(rec,"1 Ponto");
+        if (ev.tipoRecombinacao == 2)
+            strcpy(rec,"2 Pontos");
+        if (ev.tipoRecombinacao == 3)
+            strcpy(rec,"Uniforme");
+
+        if (ev.tipoMutacao == 1)
+            strcpy(mut,"Bitflip");
+        if (ev.tipoMutacao == 2)
+            strcpy(mut,"Troca");
+
+        if (ev.tipoReparacao == 0)
+            strcpy(inv,"Penalizacao");
+        if (ev.tipoReparacao == 1)
+            strcpy(inv,"Rep. Aleatoria");
+        if (ev.tipoReparacao == 2)
+            strcpy(inv,"Rep. Heuristica");
+
+        if (ev.metodoSelecao == 1)
+            strcpy(sel,"Torneio");
+        if (ev.metodoSelecao == 2)
+            strcpy(sel,"Roleta");
+
+        printf("Tipo Recombinacao - %s\n",rec );
+        printf("Tipo Mutacao - %s\n",mut );
+        printf("Tratamento Invalidos - %s\n\n",inv );
+        printf("Metodo de Selecao - %s\n\n",sel);
+
+        printf("Abordagem %d\n\n",abordagemHibrido);
+
+        if (algoritmoHibrido == 2) {
+            printf("Algoritmo: Recristalizacao Simulada\n\nTempInicial = %.5f \nArrefecimento = %.5f \nTempFinal = %.5f\n\n",temperatura,arrefecimento,temperaturaFinal);
+        }else {
+            printf("Algoritmo: Trepa Colinas\n\n");
+        }
+
+        ev.numGenerations = numIter;
     }
 
     sleep(2);
@@ -171,6 +233,14 @@ int main() {
         }else if (algoritmoEscolhido == 'e') {
             // A função escreve a melhor solução da run diretamente em 'sol'
             geraSolucaoEvolutivo(sol, distancias, nC, m, pen, ev, pop, pais, filhos);
+
+            //assumimos que a solucao final e válida se usarmos reparação
+            if (ev.tipoReparacao > 0)
+                countValidos = numIterTemp + 1;
+        }
+        else if (algoritmoEscolhido == 'h') {
+            // A função escreve a melhor solução da run diretamente em 'sol'
+            geraSolucaoHibrido(sol, distancias, nC, m, pen, ev, pop, pais, filhos, abordagemHibrido, algoritmoEscolhido, temperatura, arrefecimento, temperaturaFinal, numIter);
 
             //assumimos que a solucao final e válida se usarmos reparação
             if (ev.tipoReparacao > 0)

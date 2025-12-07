@@ -362,3 +362,116 @@ void geraSolucaoEvolutivo(Solucao *melhorGlobal, float distancias[MAX_C][MAX_C],
     // Copia para melhorGlobal para mostrar no main
     copiaSolucao(melhorGlobal, &best_run, nC);
 }
+
+
+void geraSolucaoHibrido(Solucao *melhorGlobal, float distancias[MAX_C][MAX_C], int nC, int m, float pen,
+                        Evolutivo ev, Solucao* pop, Solucao* pais, Solucao* filhos, int abordagem, int algoritmoEscolhido, float temperatura, float arrefecimento, float temperaturaFinal, int numIter){
+
+    Solucao best_run;
+    best_run.media = -1.0;
+
+    for (int i = 0; i < ev.popsize; i++) {
+        geraSolucaoInicial(&pop[i], m, nC);
+    }
+
+    avaliaPopulacao(pop, ev.popsize, distancias, nC, m, ev.tipoReparacao);
+
+    if (abordagem==1) {
+        if (algoritmoEscolhido==1) {
+            for (int i = 0; i < ev.popsize; i++) {
+                int num = numIter;
+                int temp;
+                pop[i].media = trepaColinas(pop[i].sel,distancias, m,nC,&num,pen,&temp);
+            }
+        }
+        if (algoritmoEscolhido==2) {
+            for (int i = 0; i < ev.popsize; i++) {
+                int num = numIter;
+                int temp;
+                pop[i].media = recristalizacao(pop[i].sel,distancias, m,nC,&num,pen,&temp,temperatura,arrefecimento,temperaturaFinal);
+            }
+        }
+    }
+
+    // Encontra o melhor inicial
+    for (int i = 0; i < ev.popsize; i++) {
+        if (pop[i].media > best_run.media) {
+            if(ev.tipoReparacao == 0 && pop[i].nSel != m)
+                continue;
+            copiaSolucao(&best_run, &pop[i], nC);
+        }
+    }
+
+    // Ciclo das Gerações
+    for (int g = 0; g < ev.numGenerations; g++) {
+        switch(ev.tipoRecombinacao) {
+            case 2: roleta(pop, ev.popsize, pais); break;
+            default: torneio(pop, ev.popsize, ev.tsize, pais); break;
+        }
+
+
+        // Operadores Geneticos
+
+
+        // Crossover
+        switch(ev.tipoRecombinacao) {
+            case 1: crossover_1ponto(pais, ev.popsize, nC, ev.prc, filhos); break;
+            case 2: crossover_2pontos(pais, ev.popsize, nC, ev.prc, filhos); break;
+            default: crossover_uniforme(pais, ev.popsize, nC, ev.prc, filhos); break;
+        }
+
+        // Mutacao
+        // 1 - troca ou 2 -bitflip
+        if (ev.tipoMutacao == 2)
+            mutacao_troca(filhos, ev.popsize, nC, ev.pmt);
+        else
+            mutacao_bitflip(filhos, ev.popsize, nC, ev.pmt);
+
+        // Reparacao e avaliacao dos filhos
+        avaliaPopulacao(filhos, ev.popsize, distancias, nC, m, ev.tipoReparacao);
+
+        // Atualiza melhor da run com a nova geração
+        for (int i = 0; i < ev.popsize; i++) {
+            if (filhos[i].media > best_run.media) {
+                // se for penalizacao nao copia
+                if(ev.tipoReparacao == 0 && filhos[i].nSel != m)
+                    continue;
+                copiaSolucao(&best_run, &filhos[i], nC);
+            }
+        }
+
+        // Substituição (Geracional pura: filhos substituem pais)
+        for(int i=0; i<ev.popsize; i++){
+            copiaSolucao(&pop[i], &filhos[i], nC);
+        }
+    }
+
+    if (abordagem==2) {
+        if (algoritmoEscolhido==1) {
+            for (int i = 0; i < ev.popsize; i++) {
+                int num = numIter;
+                int temp;
+                pop[i].media = trepaColinas(pop[i].sel,distancias, m,nC,&num,pen,&temp);
+            }
+        }
+        if (algoritmoEscolhido==2) {
+            for (int i = 0; i < ev.popsize; i++) {
+                int num = numIter;
+                int temp;
+                pop[i].media = recristalizacao(pop[i].sel,distancias, m,nC,&num,pen,&temp,temperatura,arrefecimento,temperaturaFinal);
+            }
+        }
+    }
+
+    // Calcula o melhor outra vez
+    for (int i = 0; i < ev.popsize; i++) {
+        if (pop[i].media > best_run.media) {
+            if(ev.tipoReparacao == 0 && pop[i].nSel != m)
+                continue;
+            copiaSolucao(&best_run, &pop[i], nC);
+        }
+    }
+
+    // Copia para melhorGlobal para mostrar no main
+    copiaSolucao(melhorGlobal, &best_run, nC);
+}

@@ -5,12 +5,12 @@ Tamanho Torneio = 2
 Tipo Recombinacao = 1
 Tipo Mutacao = 1
 Tratamento Invalidos = 0
-Metodo Selecao = 1
-TempInicial = 1000
-TempFinal = 1
-Arrefecimento = 0.99
+Metodo Selecao = 2
+Algoritmo Local = 2
+Abordagem = 1
 
 TIPO RECOMBINACAO - 1 - 1Ponto, 2 - 2Pontos, 3 - Uniforme
 TIPO MUTACAO - 1 - BitFlip, 2 - Troca
 TRATAMENTO INVALIDOS (0-Penalizacao, 1-Rep. Aleatoria, 2-Rep. Heuristica)
 METODO SELECAO 1- TORNEIO 2- ROLETA
+ALGORITMO LOCAL 1-TREPA COLINAS 2- RECRISTALIZACAO
