@@ -147,6 +147,55 @@ void torneio(Solucao *pop, int popsize, int tsize, Solucao *pais) {
     }
 }
 
+void roleta(Solucao *pop, int popsize, Solucao *pais) {
+    float *fitness_ajustado = malloc(sizeof(float) * popsize);
+    float soma_total = 0.0;
+
+    // Encontrar o menor valor
+    float min_fitness = pop[0].media;
+    for (int i = 1; i < popsize; i++) {
+        if (pop[i].media < min_fitness) {
+            min_fitness = pop[i].media;
+        }
+    }
+
+    // Calcular o Offset
+    float offset = 0.0;
+    if (min_fitness < 0) {
+        // Só aplicamos a compensacao se houver valores negativos
+        // O +1.0 garante que o pior indivíduo fica com valor 1 (probabilidade mínima) e não 0
+        offset = -1 * min_fitness + 1.0;
+    }
+
+    // Preencher tabela de probabilidades ajustadas
+    for (int i = 0; i < popsize; i++) {
+        fitness_ajustado[i] = pop[i].media + offset;
+        soma_total += fitness_ajustado[i];
+    }
+
+    // Se por azar a soma total for 0 (todos tinham fitness 0 e não houve offset),
+    // evita a divisão por zero forçando soma = 1 (vai dar tudo zero, mas não crasha)
+    if (soma_total == 0) soma_total = 1.0;
+
+    // Rodar a Roleta
+    for (int i = 0; i < popsize; i++) {
+        float valor_sorteado = random_0_1() * soma_total;
+        float soma_atual = 0.0;
+        int selecionado = popsize - 1;
+
+        for (int j = 0; j < popsize; j++) {
+            soma_atual += fitness_ajustado[j];
+            if (soma_atual >= valor_sorteado) {
+                selecionado = j;
+                break;
+            }
+        }
+        copiaSolucao(&pais[i], &pop[selecionado], MAX_C);
+    }
+
+    free(fitness_ajustado);
+}
+
 
 void crossover_1ponto(Solucao *pais, int popsize, int nC, float pr, Solucao *filhos) {
     for (int i = 0; i < popsize; i += 2) {
@@ -268,7 +317,11 @@ void geraSolucaoEvolutivo(Solucao *melhorGlobal, float distancias[MAX_C][MAX_C],
 
     // Ciclo das Gerações
     for (int g = 0; g < ev.numGenerations; g++) {
-        torneio(pop, ev.popsize, ev.tsize, pais);
+        switch(ev.tipoRecombinacao) {
+            case 2: roleta(pop, ev.popsize, pais); break;
+            default: torneio(pop, ev.popsize, ev.tsize, pais); break;
+        }
+
 
         // Operadores Geneticos
 
