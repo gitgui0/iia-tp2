@@ -377,18 +377,18 @@ void geraSolucaoHibrido(Solucao *melhorGlobal, float distancias[MAX_C][MAX_C], i
     avaliaPopulacao(pop, ev.popsize, distancias, nC, m, ev.tipoReparacao);
 
     if (abordagem==1) {
-        if (algoritmoEscolhido==1) {
+        if (algoritmoEscolhido == 1) {
             for (int i = 0; i < ev.popsize; i++) {
                 int num = numIter;
                 int temp;
-                pop[i].media = trepaColinas(pop[i].sel,distancias, m,nC,&num,pen,&temp);
+                trepaColinas(&pop[i], distancias, m, nC, &num, pen, &temp);
             }
         }
-        if (algoritmoEscolhido==2) {
+        if (algoritmoEscolhido == 2) {
             for (int i = 0; i < ev.popsize; i++) {
                 int num = numIter;
                 int temp;
-                pop[i].media = recristalizacao(pop[i].sel,distancias, m,nC,&num,pen,&temp,temperatura,arrefecimento,temperaturaFinal);
+                recristalizacao(&pop[i], distancias, m, nC, &num, pen, &temp, temperatura, arrefecimento, temperaturaFinal);
             }
         }
     }
@@ -447,18 +447,18 @@ void geraSolucaoHibrido(Solucao *melhorGlobal, float distancias[MAX_C][MAX_C], i
     }
 
     if (abordagem==2) {
-        if (algoritmoEscolhido==1) {
+        if (algoritmoEscolhido == 1) {
             for (int i = 0; i < ev.popsize; i++) {
                 int num = numIter;
-                int temp;
-                pop[i].media = trepaColinas(pop[i].sel,distancias, m,nC,&num,pen,&temp);
+                int temp; // countValido
+                trepaColinas(&pop[i], distancias, m, nC, &num, pen, &temp);
             }
         }
-        if (algoritmoEscolhido==2) {
+        if (algoritmoEscolhido == 2) {
             for (int i = 0; i < ev.popsize; i++) {
                 int num = numIter;
-                int temp;
-                pop[i].media = recristalizacao(pop[i].sel,distancias, m,nC,&num,pen,&temp,temperatura,arrefecimento,temperaturaFinal);
+                int temp; // countValidos
+                recristalizacao(&pop[i], distancias, m, nC, &num, pen, &temp, temperatura, arrefecimento, temperaturaFinal);
             }
         }
     }
