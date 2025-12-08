@@ -9,6 +9,8 @@ int main() {
     int nC,m,numRuns=-1, numIter;
     float distancias[MAX_C][MAX_C], mbf=0;
 
+    int tipoVizinhanca = 1;
+    int aceitaMesmoCusto = 1;
     char algoritmoEscolhido;
     int algoritmoHibrido = 1, abordagemHibrido = 2;
     Solucao* sol;
@@ -87,7 +89,7 @@ int main() {
 
 
     if (algoritmoEscolhido=='r') {
-        if (lerParametrosRecristalizacao(&temperatura,&arrefecimento,&temperaturaFinal) == 1) {
+        if (lerParametrosRecristalizacao(&temperatura,&arrefecimento,&temperaturaFinal,&tipoVizinhanca,&aceitaMesmoCusto) == 1) {
             printf("\nErro a ler os parametros para recristalizacao.");
             return 1;
         }
@@ -115,8 +117,17 @@ int main() {
 
     melhorSol->media = -1; // so para comecar
 
-    if (algoritmoEscolhido == 't') printf("\n---ALGORTIMO TREPA COLINAS ---\n");
-    else if (algoritmoEscolhido == 'r') printf("\n---ALGORTIMO RECRISTALIZACAO SIMULADA---\nParametros: \n\nTempInicial = %.5f \nArrefecimento = %.5f \nTempFinal = %.5f\n\n",temperatura,arrefecimento,temperaturaFinal);
+    if (algoritmoEscolhido == 't') {
+        printf("\n---ALGORTIMO TREPA COLINAS ---\n\n Tipo Vizinhanca - ");
+        printf("Troca\n\n");
+    }
+    else if (algoritmoEscolhido == 'r') {
+        printf("\n---ALGORTIMO RECRISTALIZACAO SIMULADA---\nParametros: \n\nTempInicial = %.5f \nArrefecimento = %.5f \nTempFinal = %.5f\n\n",temperatura,arrefecimento,temperaturaFinal);
+        if (tipoVizinhanca==1)
+            printf("Tipo Vizinhanca - Troca\n\n");
+        else
+            printf("Tipo Vizinhanca - BitFlip\n\n");
+    }
     else if (algoritmoEscolhido == 'e') {
         printf("\n--- ALGORITMO EVOLUTIVO ---\nParametros: \n\n");
         printf("Tamanho Populacao = %d\n",ev.popsize);
@@ -220,13 +231,13 @@ int main() {
         int numIterTemp = numIter; // a recristalizacao pode muda lo
 
         if (algoritmoEscolhido == 't') {
-            if (trepaColinas(sol,distancias,m,nC,&numIterTemp,pen,&countValidos)!=0) {
+            if (trepaColinas(sol,distancias,m,nC,&numIterTemp,pen,&countValidos, tipoVizinhanca)!=0) {
                 printf("ERRO NO ALGORITMO TREPA-COLINAS\n");
                 return 1;
             }
         }else if (algoritmoEscolhido == 'r') {
 
-            if (recristalizacao(sol,distancias,m,nC,&numIterTemp,pen,&countValidos,temperatura,arrefecimento,temperaturaFinal)!=0) {
+            if (recristalizacao(sol,distancias,m,nC,&numIterTemp,pen,&countValidos,temperatura,arrefecimento,temperaturaFinal, tipoVizinhanca, aceitaMesmoCusto)!=0) {
                 printf("ERRO NO ALGORITMO RECRISTALIZACAO SIMULADA\n");
                 return 1;
             }
@@ -240,19 +251,19 @@ int main() {
         }
         else if (algoritmoEscolhido == 'h') {
             // A função escreve a melhor solução da run diretamente em 'sol'
-            geraSolucaoHibrido(sol, distancias, nC, m, pen, ev, pop, pais, filhos, abordagemHibrido, algoritmoEscolhido, temperatura, arrefecimento, temperaturaFinal, numIter);
+            geraSolucaoHibrido(sol, distancias, nC, m, pen, ev, pop, pais, filhos, abordagemHibrido, algoritmoEscolhido, temperatura, arrefecimento, temperaturaFinal, numIterTemp, tipoVizinhanca, aceitaMesmoCusto);
 
             //assumimos que a solucao final e válida se usarmos reparação
             if (ev.tipoReparacao > 0)
                 countValidos = numIterTemp + 1;
         }
 
-        printf("\nRepeticao %d\n",i+1);
-        printSol(sol,nC);
-        printf("\nMedia de Distancias: %.2f \n",sol->media);
+        //printf("\nRepeticao %d\n",i+1);
+        //printSol(sol,nC);
+        //printf("\nMedia de Distancias: %.2f \n",sol->media);
+        //printf("\nNumero de Iteracoes: %d\n",numIterTemp);
 
-
-        printf("Percentagem de Invalidos: %.2f\n", ( 1.0 - (float)countValidos / ( (float)numIterTemp + 1.0 ) ) * 100);
+        //printf("Percentagem de Invalidos: %.2f\n", ( 1.0 - (float)countValidos / ( (float)numIterTemp + 1.0 ) ) * 100);
 
         mbf+=sol->media;
 
@@ -263,8 +274,8 @@ int main() {
 
     printf("\n----MELHOR SOLUCAO ENCONTRADA----\n");
     printSol(melhorSol,nC);
-    printf("\nMedia de Distancias: %.2f \n",melhorSol->media);
-    printf("\nMBF: %.2f\n",mbf/(float)numRuns);
+    printf("\nMelhor Solucao - Media de Distancias: %.2f \n",melhorSol->media);
+    printf("\nMelhor Solucao - MBF: %.2f\n",mbf/(float)numRuns);
 
     free(sol);
     free(melhorSol);

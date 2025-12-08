@@ -3,7 +3,7 @@
 #include <stdio.h>
 
 
-int lerParametrosRecristalizacao(float* temperaturaInicial, float* arrefecimento,float* temperaturaFinal){
+int lerParametrosRecristalizacao(float* temperaturaInicial, float* arrefecimento,float* temperaturaFinal, int* vizinhanca, int *aceita){
   int escolha;
 
   printf("Como deseja os parametros?\n\n0-ficheiro - params_recristalizacao.txt \n1-hardcoded\n2-manualmente\n\n>");
@@ -18,6 +18,8 @@ int lerParametrosRecristalizacao(float* temperaturaInicial, float* arrefecimento
     fscanf(f,"TempInicial = %f\n",temperaturaInicial);
     fscanf(f,"TempFinal = %f\n",temperaturaFinal);
     fscanf(f,"Arrefecimento = %f\n",arrefecimento);
+    fscanf(f,"Vizinhanca = %d\n",vizinhanca);
+    fscanf(f,"AceitaMesmo = %d\n",aceita);
 
     if(*arrefecimento<= 0 || *arrefecimento >= 1){
       printf("\nArrefecimento invalido");
@@ -38,6 +40,12 @@ int lerParametrosRecristalizacao(float* temperaturaInicial, float* arrefecimento
       printf("Fator de arrefecimento para Recristalizacao Simulada->");
       scanf("%f",arrefecimento);
     }while (*arrefecimento<= 0 || *arrefecimento >= 1);
+
+    printf("Vizinhanca->");
+    scanf("%d",vizinhanca);
+
+    printf("Aceita solucoes do mesmo custo->");
+    scanf("%d",aceita);
   }
   return 0;
 };
