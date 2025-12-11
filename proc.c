@@ -203,10 +203,10 @@ int lerParametrosHibrido(Evolutivo *ev, int *algoritmo, int* abordagem, float* t
     scanf("%d", &ev->tipoReparacao);
 
     printf("Abordagem (1 ou 2)->");
-    scanf("%d", &abordagem);
+    scanf("%d", abordagem);
 
     printf("Vizinhanca (1-troca ou 2-bitflip)->");
-    scanf("%d", &vizinhanca);
+    scanf("%d", vizinhanca);
 
     printf("Algoritmo (1-Trepa Colinas, 2-Recristalizacao Simulada): ");
     scanf("%d", algoritmo);

@@ -9,7 +9,7 @@ int main() {
     int nC,m,numRuns=-1, numIter;
     float distancias[MAX_C][MAX_C], mbf=0;
 
-    int tipoVizinhanca;
+    int tipoVizinhanca=1; // default para o trepacolinas
     int aceitaMesmoCusto;
     int numIterLocal;
     char algoritmoEscolhido;
@@ -28,7 +28,7 @@ int main() {
     printf("\n| TP IIA - Problema de Optimizacao |\n");
 
     if (leInfo(&nC,&m,distancias)!=0) {
-        printf("\nErro o ler informacoes.");
+        printf("\nErro ao ler informacoes.");
         return 1;
     }
 
