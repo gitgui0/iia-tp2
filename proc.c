@@ -122,7 +122,7 @@ int lerParametrosEvolutivo(Evolutivo *ev){
 }
 
 
-int lerParametrosHibrido(Evolutivo *ev, int *algoritmo, int* abordagem, float* temperaturaMaxima, float* arrefecimento,float* temperaturaMinima, int* numIterLocal, int* aceita){
+int lerParametrosHibrido(Evolutivo *ev, int *algoritmo, int* abordagem, float* temperaturaMaxima, float* arrefecimento,float* temperaturaMinima, int* numIterLocal, int* aceita, int* vizinhanca){
   int escolha;
   printf("Como deseja os parametros?\n\n0-ficheiro - params_hibrido.txt \n1-hardcoded\n2-manualmente\n\n>");
   scanf("%d",&escolha);
@@ -144,6 +144,7 @@ int lerParametrosHibrido(Evolutivo *ev, int *algoritmo, int* abordagem, float* t
     fscanf(f,"Metodo Selecao = %d\n",&ev->metodoSelecao );
     fscanf(f,"Algoritmo Local = %d\n",algoritmo );
     fscanf(f,"Abordagem = %d\n",abordagem );
+    fscanf(f, "Vizinhanca = %d\n",vizinhanca);
 
 
     if (*algoritmo == 2) {
@@ -176,6 +177,7 @@ int lerParametrosHibrido(Evolutivo *ev, int *algoritmo, int* abordagem, float* t
     *arrefecimento = 0.9;
     *numIterLocal = 15;
     *aceita = 0;
+    *vizinhanca = 1;
   }
   if(escolha == 2){
 
@@ -202,6 +204,9 @@ int lerParametrosHibrido(Evolutivo *ev, int *algoritmo, int* abordagem, float* t
 
     printf("Abordagem (1 ou 2)->");
     scanf("%d", &abordagem);
+
+    printf("Vizinhanca (1-troca ou 2-bitflip)->");
+    scanf("%d", &vizinhanca);
 
     printf("Algoritmo (1-Trepa Colinas, 2-Recristalizacao Simulada): ");
     scanf("%d", algoritmo);

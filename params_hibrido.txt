@@ -9,6 +9,7 @@ Metodo Selecao = 1
 Algoritmo Local = 2
 AceitaMesmo = 1
 Abordagem = 2
+Vizinhanca = 1
 TempMax = 1000
 TempMin = 0.1
 Arrefecimento = 0.999
@@ -19,3 +20,4 @@ TIPO MUTACAO - 1 - BitFlip, 2 - Troca
 TRATAMENTO INVALIDOS (0-Penalizacao, 1-Rep. Aleatoria, 2-Rep. Heuristica)
 METODO SELECAO 1- TORNEIO 2- ROLETA
 ALGORITMO LOCAL 1-TREPA COLINAS 2- RECRISTALIZACAO
+VIZINHANCA 1-troca, 2-bitflip

@@ -85,7 +85,7 @@ int main() {
         filhos = malloc(sizeof(Solucao) * ev.popsize);
         if (!pop || !pais || !filhos) { printf("Erro memoria populacoes\n"); return 1; }
     }else if (algoritmoEscolhido == 'h'){
-        if (lerParametrosHibrido(&ev,&algoritmoHibrido,&abordagemHibrido,&temperaturaMaxima,&arrefecimento,&temperaturaMinima,&numIterLocal, &aceitaMesmoCusto) == 1) {
+        if (lerParametrosHibrido(&ev,&algoritmoHibrido,&abordagemHibrido,&temperaturaMaxima,&arrefecimento,&temperaturaMinima,&numIterLocal, &aceitaMesmoCusto, &tipoVizinhanca) == 1) {
             printf("\nErro a ler os parametros para o hibrido.");
             return 1;
         }
