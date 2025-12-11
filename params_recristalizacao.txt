@@ -1,0 +1,6 @@
+TempMax = 1000
+TempMin = 0.1
+Arrefecimento = 0.999
+Vizinhanca = 2
+AceitaMesmo = 1
+1-troca, 2-bitflip
