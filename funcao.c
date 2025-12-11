@@ -17,15 +17,22 @@ float devolveMedia(Solucao* sol, float distancias[MAX_C][MAX_C], int nC, int m) 
 }
 
 float calculaPenalidade(Solucao* sol, float distancias[MAX_C][MAX_C], int nC, int m,float pen) {
+
+    int contaReal = 0;
+    for(int i=0; i<nC; i++) {
+        if(sol->sel[i] == 1) contaReal++;
+    }
+
+    sol->nSel = contaReal;
+
+
     float distMedia;
 
-    //valor base (Distância Média)
     distMedia = devolveMedia(sol, distancias, nC, m);
 
-    // se m for diferen de numeor de soluçoes "froça" a mudança para ser igual
     if (sol->nSel != m) {
         int diferenca = abs(sol->nSel - m);
-        return distMedia - diferenca * pen;
+        return distMedia - (float)diferenca * pen;
     }
     return distMedia;
 }

@@ -60,7 +60,7 @@ int main() {
     }while (numRuns<=0);
 
     do {
-        printf("Numero de iteracoes para o algoritmo -> ");
+        printf("Numero de iteracoes / geracoes para o algoritmo -> ");
         scanf("%d",&numIter);
     }while (numIter<=0);
 
@@ -89,6 +89,7 @@ int main() {
             printf("\nErro a ler os parametros para o hibrido.");
             return 1;
         }
+        ev.numGenerations  =numIter;
 
         pop = malloc(sizeof(Solucao) * ev.popsize);
         pais = malloc(sizeof(Solucao) * ev.popsize);
@@ -111,9 +112,9 @@ int main() {
     }
     else if (algoritmoEscolhido == 'r') {
         printf("\n\n--- ALGORITMO: RECRISTALIZACAO SIMULADA ---");
-        printf("\nTemp Maxima: %.5f", temperaturaMaxima);
-        printf("\nTemp Minima: %.5f", temperaturaMinima);
-        printf("\nArrefecimento: %.5f", arrefecimento);
+        printf("\nTemp Maxima: %.2f", temperaturaMaxima);
+        printf("\nTemp Minima: %.2f", temperaturaMinima);
+        printf("\nArrefecimento: %.4f", arrefecimento);
         printf("\nTipo Vizinhanca: %s", (tipoVizinhanca == 1 ? "Troca" : "BitFlip"));
         printf("\nAceita Vizinho Mesmo Custo: %s", (aceitaMesmoCusto == 1 ? "Sim" : "Nao"));
     }
@@ -123,8 +124,8 @@ int main() {
 
         printf("\n\n[Parametros Evolutivos]");
         printf("\nTamanho Populacao: %d", ev.popsize);
-        printf("\nProb Mutacao: %.4f", ev.pmt);
-        printf("\nProb Recombinacao: %.4f", ev.prc);
+        printf("\nProb Mutacao: %.3f", ev.pmt);
+        printf("\nProb Recombinacao: %.2f", ev.prc);
         printf("\nTamanho Torneio: %d", ev.tsize);
 
         // Traduzir Códigos para Texto
@@ -158,9 +159,9 @@ int main() {
             printf("\nTipo Vizinhanca Local: %s", (tipoVizinhanca == 1 ? "Troca" : "BitFlip"));
 
             if (algoritmoHibrido == 2) { // Se for Recristalização
-                printf("\nTemp Maxima: %.5f", temperaturaMaxima);
-                printf("\nTemp Minima: %.5f", temperaturaMinima);
-                printf("\nArrefecimento: %.5f", arrefecimento);
+                printf("\nTemp Maxima: %.2f", temperaturaMaxima);
+                printf("\nTemp Minima: %.2f", temperaturaMinima);
+                printf("\nArrefecimento: %.4f", arrefecimento);
                 printf("\nAceita Mesmo Custo: %s", (aceitaMesmoCusto == 1 ? "Sim" : "Nao"));
             }
         }
