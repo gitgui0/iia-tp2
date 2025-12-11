@@ -11,6 +11,7 @@ int main() {
 
     int tipoVizinhanca = 1;
     int aceitaMesmoCusto = 1;
+    int numIterLocal = 10;
     char algoritmoEscolhido;
     int algoritmoHibrido = 1, abordagemHibrido = 2;
     Solucao* sol;
@@ -104,7 +105,7 @@ int main() {
         filhos = malloc(sizeof(Solucao) * ev.popsize);
         if (!pop || !pais || !filhos) { printf("Erro memoria populacoes\n"); return 1; }
     }else if (algoritmoEscolhido == 'h'){
-        if (lerParametrosHibrido(&ev,&algoritmoHibrido,&abordagemHibrido,&temperatura,&arrefecimento,&temperaturaFinal) == 1) {
+        if (lerParametrosHibrido(&ev,&algoritmoHibrido,&abordagemHibrido,&temperatura,&arrefecimento,&temperaturaFinal,&numIterLocal, &aceitaMesmoCusto) == 1) {
             printf("\nErro a ler os parametros para o hibrido.");
             return 1;
         }
@@ -251,7 +252,7 @@ int main() {
         }
         else if (algoritmoEscolhido == 'h') {
             // A função escreve a melhor solução da run diretamente em 'sol'
-            geraSolucaoHibrido(sol, distancias, nC, m, pen, ev, pop, pais, filhos, abordagemHibrido, algoritmoEscolhido, temperatura, arrefecimento, temperaturaFinal, numIterTemp, tipoVizinhanca, aceitaMesmoCusto);
+            geraSolucaoHibrido(sol, distancias, nC, m, pen, ev, pop, pais, filhos, abordagemHibrido, algoritmoEscolhido, temperatura, arrefecimento, temperaturaFinal, numIterLocal, tipoVizinhanca, aceitaMesmoCusto);
 
             //assumimos que a solucao final e válida se usarmos reparação
             if (ev.tipoReparacao > 0)

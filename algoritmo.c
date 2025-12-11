@@ -327,6 +327,7 @@ void geraSolucaoEvolutivo(Solucao *melhorGlobal, float distancias[MAX_C][MAX_C],
 
     // Ciclo das Gerações
     for (int g = 0; g < ev.numGenerations; g++) {
+
         switch(ev.tipoRecombinacao) {
             case 2: roleta(pop, ev.popsize, pais); break;
             default: torneio(pop, ev.popsize, ev.tsize, pais); break;
@@ -414,13 +415,11 @@ void geraSolucaoHibrido(Solucao *melhorGlobal, float distancias[MAX_C][MAX_C], i
 
     // Ciclo das Gerações
     for (int g = 0; g < ev.numGenerations; g++) {
+        // Operadores Geneticos
         switch(ev.tipoRecombinacao) {
             case 2: roleta(pop, ev.popsize, pais); break;
             default: torneio(pop, ev.popsize, ev.tsize, pais); break;
         }
-
-
-        // Operadores Geneticos
 
 
         // Crossover

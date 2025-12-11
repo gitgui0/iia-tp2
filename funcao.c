@@ -31,7 +31,6 @@ float calculaPenalidade(Solucao* sol, float distancias[MAX_C][MAX_C], int nC, in
 }
 
 void reparaSolucaoAleatoria(Solucao *s, int m, int nC) {
-    printf("\nnsel antigo %d\n",s->nSel);
     s->nSel = 0;
     for(int i=0; i<nC; i++) {
         if(s->sel[i]) s->nSel++;

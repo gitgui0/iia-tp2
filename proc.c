@@ -44,7 +44,7 @@ int lerParametrosRecristalizacao(float* temperaturaInicial, float* arrefecimento
     printf("Vizinhanca->");
     scanf("%d",vizinhanca);
 
-    printf("Aceita solucoes do mesmo custo->");
+    printf("Aceita solucoes do mesmo custo (0,1)->");
     scanf("%d",aceita);
   }
   return 0;
@@ -97,6 +97,9 @@ int lerParametrosEvolutivo(Evolutivo *ev){
     printf("Tratamento Invalidos (0-Penalizacao, 1-Rep. Aleatoria, 2-Rep. Heuristica): ");
     scanf("%d", &ev->tipoReparacao);
 
+    printf("Metodo de Selecao  (1-Torneio, 2-Roleta): ");
+    scanf("%d", &ev->metodoSelecao);
+
   }
 
 
@@ -106,7 +109,7 @@ int lerParametrosEvolutivo(Evolutivo *ev){
 }
 
 
-int lerParametrosHibrido(Evolutivo *ev, int *algoritmo, int* abordagem, float* temperaturaInicial, float* arrefecimento,float* temperaturaFinal){
+int lerParametrosHibrido(Evolutivo *ev, int *algoritmo, int* abordagem, float* temperaturaInicial, float* arrefecimento,float* temperaturaFinal, int* numIterLocal, int* aceita){
   int escolha;
   printf("Como deseja os parametros?\n\n0-ficheiro - params_hibrido.txt \n1-hardcoded\n2-manualmente\n\n>");
   scanf("%d",&escolha);
@@ -134,11 +137,14 @@ int lerParametrosHibrido(Evolutivo *ev, int *algoritmo, int* abordagem, float* t
       fscanf(f,"TempFinal = %f\n",temperaturaFinal);
       fscanf(f,"Arrefecimento = %f\n",arrefecimento);
 
+
       if(*arrefecimento<= 0 || *arrefecimento >= 1){
         printf("\nArrefecimento invalido");
         return 1;
       }
     }
+
+    fscanf(f,"Num iter = %f\n",numIterLocal);
 
 
     fclose(f);
@@ -163,12 +169,16 @@ int lerParametrosHibrido(Evolutivo *ev, int *algoritmo, int* abordagem, float* t
     printf("Tipo Mutacao (1-BitFlip, 2-Troca): ");
     scanf("%d", &ev->tipoMutacao);
 
+    printf("Tratamento Invalidos (0-Penalizacao, 1-Rep. Aleatoria, 2-Rep. Heuristica): ");
+    scanf("%d", &ev->tipoReparacao);
+
+    printf("Abordagem (1 ou 2)->");
+    scanf("%d", &abordagem);
+
     printf("Algoritmo (1-Trepa Colinas, 2-Recristalizacao Simulada): ");
     scanf("%d", algoritmo);
 
     if (*algoritmo == 2) {
-        printf("Tratamento Invalidos (0-Penalizacao, 1-Rep. Aleatoria, 2-Rep. Heuristica): ");
-        scanf("%d", &ev->tipoReparacao);
 
         printf("Temperatura Inicial para Recristalizacao Simulada->");
         scanf("%f",temperaturaInicial);
@@ -181,6 +191,12 @@ int lerParametrosHibrido(Evolutivo *ev, int *algoritmo, int* abordagem, float* t
           scanf("%f",arrefecimento);
         }while (*arrefecimento<= 0 || *arrefecimento >= 1);
     }
+
+    printf("Numero de iteracoes para o algoritmo local: ");
+    scanf("%d", numIterLocal);
+
+    printf("Aceita solucoes do mesmo custo (nao-0, sim-1)->");
+    scanf("%s",aceita);
 
   }
   return 0;

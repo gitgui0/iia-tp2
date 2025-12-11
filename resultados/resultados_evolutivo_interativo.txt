@@ -1,0 +1,9 @@
+# Resultados da Execução Evolutiva (AG) - Parâmetros Fixos
+# Runs: 15, Iteracoes: 500, Recomb: 1, Mutacao: 1
+--------------------------------------------------
+
+=== Execução 1/6 ===
+FICHEIRO: tourism_5.txt
+PARAMETROS: Runs=15, Iteracoes=500
+MÉTRICAS: Recomb=1, Mutacao=1, Inv=0, Sel=1
+------------------------------
