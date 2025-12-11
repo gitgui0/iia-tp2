@@ -143,6 +143,7 @@ int lerParametrosHibrido(Evolutivo *ev, int *algoritmo, int* abordagem, float* t
     fscanf(f,"Tratamento Invalidos = %d\n",&ev->tipoReparacao );
     fscanf(f,"Metodo Selecao = %d\n",&ev->metodoSelecao );
     fscanf(f,"Algoritmo Local = %d\n",algoritmo );
+    fscanf(f,"AceitaMesmo = %d\n",aceita);
     fscanf(f,"Abordagem = %d\n",abordagem );
     fscanf(f, "Vizinhanca = %d\n",vizinhanca);
 
