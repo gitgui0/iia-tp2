@@ -3,7 +3,7 @@
 #include <stdio.h>
 
 
-int lerParametrosRecristalizacao(float* temperaturaInicial, float* arrefecimento,float* temperaturaFinal, int* vizinhanca, int *aceita){
+int lerParametrosRecristalizacao(float* temperaturaMaxima, float* arrefecimento,float* temperaturaMinima, int* vizinhanca, int *aceita){
   int escolha;
 
   printf("Como deseja os parametros?\n\n0-ficheiro - params_recristalizacao.txt \n1-hardcoded\n2-manualmente\n\n>");
@@ -15,8 +15,8 @@ int lerParametrosRecristalizacao(float* temperaturaInicial, float* arrefecimento
       printf("\nNao foi encontrado o ficheiro params_recristalizacao.txt");
       return 1;
     }
-    fscanf(f,"TempInicial = %f\n",temperaturaInicial);
-    fscanf(f,"TempFinal = %f\n",temperaturaFinal);
+    fscanf(f,"TempMax = %f\n",temperaturaMaxima);
+    fscanf(f,"TempMin = %f\n",temperaturaMinima);
     fscanf(f,"Arrefecimento = %f\n",arrefecimento);
     fscanf(f,"Vizinhanca = %d\n",vizinhanca);
     fscanf(f,"AceitaMesmo = %d\n",aceita);
@@ -28,22 +28,24 @@ int lerParametrosRecristalizacao(float* temperaturaInicial, float* arrefecimento
 
     fclose(f);
   }
-  if(escolha == 2){
-
-    printf("Temperatura Inicial para Recristalizacao Simulada->");
-    scanf("%f",temperaturaInicial);
-
-    printf("Temperatura Final para Recristalizacao Simulada->");
-    scanf("%f",temperaturaFinal);
-
+  else if(escolha == 1){
+    *temperaturaMaxima = 1000.0;
+    *temperaturaMinima = 0.01;
+    *arrefecimento = 0.99;
+    *vizinhanca = 1;
+    *aceita = 0;
+  }
+  else if(escolha == 2){
+    printf("Temperatura Maxima para Recristalizacao Simulada->");
+    scanf("%f",temperaturaMaxima);
+    printf("Temperatura Minima para Recristalizacao Simulada->");
+    scanf("%f",temperaturaMinima);
     do {
       printf("Fator de arrefecimento para Recristalizacao Simulada->");
       scanf("%f",arrefecimento);
     }while (*arrefecimento<= 0 || *arrefecimento >= 1);
-
     printf("Vizinhanca->");
     scanf("%d",vizinhanca);
-
     printf("Aceita solucoes do mesmo custo (0,1)->");
     scanf("%d",aceita);
   }
@@ -74,6 +76,17 @@ int lerParametrosEvolutivo(Evolutivo *ev){
 
     fclose(f);
   }
+  if (escolha == 1) {
+      ev->popsize = 100;
+      ev->pmt = 0.01;
+      ev->prc = 0.7;
+      ev->tsize = 2;
+      ev->tipoRecombinacao = 1;
+      ev->tipoMutacao = 1;
+      ev->tipoReparacao = 0;
+      ev->metodoSelecao = 1;
+  }
+
   if(escolha == 2){
 
     printf("Tamanho da Populacao (ex: 50, 100): ");
@@ -109,7 +122,7 @@ int lerParametrosEvolutivo(Evolutivo *ev){
 }
 
 
-int lerParametrosHibrido(Evolutivo *ev, int *algoritmo, int* abordagem, float* temperaturaInicial, float* arrefecimento,float* temperaturaFinal, int* numIterLocal, int* aceita){
+int lerParametrosHibrido(Evolutivo *ev, int *algoritmo, int* abordagem, float* temperaturaMaxima, float* arrefecimento,float* temperaturaMinima, int* numIterLocal, int* aceita){
   int escolha;
   printf("Como deseja os parametros?\n\n0-ficheiro - params_hibrido.txt \n1-hardcoded\n2-manualmente\n\n>");
   scanf("%d",&escolha);
@@ -132,22 +145,37 @@ int lerParametrosHibrido(Evolutivo *ev, int *algoritmo, int* abordagem, float* t
     fscanf(f,"Algoritmo Local = %d\n",algoritmo );
     fscanf(f,"Abordagem = %d\n",abordagem );
 
-    if (*algoritmo == 2) {
-      fscanf(f,"TempInicial = %f\n",temperaturaInicial);
-      fscanf(f,"TempFinal = %f\n",temperaturaFinal);
-      fscanf(f,"Arrefecimento = %f\n",arrefecimento);
 
+    if (*algoritmo == 2) {
+      fscanf(f,"TempMax = %f\n",temperaturaMaxima);
+      fscanf(f,"TempMin = %f\n",temperaturaMinima);
+      fscanf(f,"Arrefecimento = %f\n",arrefecimento);
 
       if(*arrefecimento<= 0 || *arrefecimento >= 1){
         printf("\nArrefecimento invalido");
         return 1;
       }
     }
-
-    fscanf(f,"Num iter = %f\n",numIterLocal);
-
+    fscanf(f,"Num iter = %d\n",numIterLocal);
 
     fclose(f);
+  }
+  if(escolha == 1){
+    ev->popsize = 50;
+    ev->pmt = 0.01;
+    ev->prc = 0.7;
+    ev->tsize = 2;
+    ev->tipoRecombinacao = 1;
+    ev->tipoMutacao = 1;
+    ev->tipoReparacao = 0;
+    ev->metodoSelecao = 1;
+    *algoritmo = 2; // Recristalizacao
+    *abordagem = 2;
+    *temperaturaMaxima = 1000;
+    *temperaturaMinima = 1;
+    *arrefecimento = 0.9;
+    *numIterLocal = 15;
+    *aceita = 0;
   }
   if(escolha == 2){
 
@@ -180,11 +208,11 @@ int lerParametrosHibrido(Evolutivo *ev, int *algoritmo, int* abordagem, float* t
 
     if (*algoritmo == 2) {
 
-        printf("Temperatura Inicial para Recristalizacao Simulada->");
-        scanf("%f",temperaturaInicial);
+        printf("Temperatura Maxima para Recristalizacao Simulada->");
+        scanf("%f",temperaturaMaxima);
 
-        printf("Temperatura Final para Recristalizacao Simulada->");
-        scanf("%f",temperaturaFinal);
+        printf("Temperatura Minima para Recristalizacao Simulada->");
+        scanf("%f",temperaturaMinima);
 
         do {
           printf("Fator de arrefecimento para Recristalizacao Simulada->");
@@ -196,7 +224,7 @@ int lerParametrosHibrido(Evolutivo *ev, int *algoritmo, int* abordagem, float* t
     scanf("%d", numIterLocal);
 
     printf("Aceita solucoes do mesmo custo (nao-0, sim-1)->");
-    scanf("%s",aceita);
+    scanf("%d",aceita);
 
   }
   return 0;

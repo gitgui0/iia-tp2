@@ -94,7 +94,7 @@ int trepaColinas(Solucao *atual, float distancias[MAX_C][MAX_C],int m, int nC, i
 }
 
 int recristalizacao(Solucao *atual, float distancias[MAX_C][MAX_C], int m, int nC, int* numIter,
-                       float pen, int* countValidos, float temperatura, float resfriamento, float temperaturaFinal, int tipoVizinhanca, int aceita){
+                       float pen, int* countValidos, float temperaturaMaxima, float resfriamento, float temperaturaMinima, int tipoVizinhanca, int aceita){
     Solucao *vizinho, *melhorGlobal;
 
 	vizinho = malloc(sizeof(Solucao));
@@ -105,7 +105,7 @@ int recristalizacao(Solucao *atual, float distancias[MAX_C][MAX_C], int m, int n
 
     int k = *numIter;
     atual->media = calculaPenalidade(atual,distancias,nC,m,pen);
-    while(temperatura > temperaturaFinal){
+    while(temperaturaMaxima > temperaturaMinima){
         for(int i = 0; i < k; i++){
             if(tipoVizinhanca == 2){
           	    geraVizinhoBitFlip(atual,vizinho,nC, m);
@@ -125,14 +125,14 @@ int recristalizacao(Solucao *atual, float distancias[MAX_C][MAX_C], int m, int n
                 copiaSolucao(atual, vizinho, nC);
             }
             else {
-                if(random_0_1() < exp((vizinho->media - atual->media) / temperatura)){
+                if(random_0_1() < exp((vizinho->media - atual->media) / temperaturaMaxima)){
                     // printf("[ACEITOU PIOR] Temp: %.2f | Atual: %.2f | Vizinho: %.2f\n",temperatura, atual->media, vizinho->media);
                     copiaSolucao(atual, vizinho, nC);
                 }
             }
         	(*numIter)++;
         }
-        temperatura*=resfriamento;
+        temperaturaMaxima*=resfriamento;
     }
 
 
@@ -376,7 +376,7 @@ void geraSolucaoEvolutivo(Solucao *melhorGlobal, float distancias[MAX_C][MAX_C],
 
 
 void geraSolucaoHibrido(Solucao *melhorGlobal, float distancias[MAX_C][MAX_C], int nC, int m, float pen,
-                        Evolutivo ev, Solucao* pop, Solucao* pais, Solucao* filhos, int abordagem, int algoritmoEscolhido, float temperatura, float arrefecimento, float temperaturaFinal, int numIter, int tipoVizinhanca, int aceita){
+                        Evolutivo ev, Solucao* pop, Solucao* pais, Solucao* filhos, int abordagem, int algoritmoEscolhido, float temperaturaMaxima, float arrefecimento, float temperaturaMinima, int numIter, int tipoVizinhanca, int aceita){
 
     Solucao best_run;
     best_run.media = -1.0;
@@ -395,11 +395,12 @@ void geraSolucaoHibrido(Solucao *melhorGlobal, float distancias[MAX_C][MAX_C], i
                 trepaColinas(&pop[i], distancias, m, nC, &num, pen, &temp, tipoVizinhanca);
             }
         }
+
         if (algoritmoEscolhido == 2) {
             for (int i = 0; i < ev.popsize; i++) {
                 int num = numIter;
                 int temp;
-                recristalizacao(&pop[i], distancias, m, nC, &num, pen, &temp, temperatura, arrefecimento, temperaturaFinal, tipoVizinhanca, aceita);
+                recristalizacao(&pop[i], distancias, m, nC, &num, pen, &temp, temperaturaMaxima, arrefecimento, temperaturaMinima, tipoVizinhanca, aceita);
             }
         }
     }
@@ -467,7 +468,7 @@ void geraSolucaoHibrido(Solucao *melhorGlobal, float distancias[MAX_C][MAX_C], i
             for (int i = 0; i < ev.popsize; i++) {
                 int num = numIter;
                 int temp; // countValidos
-                recristalizacao(&pop[i], distancias, m, nC, &num, pen, &temp, temperatura, arrefecimento, temperaturaFinal, tipoVizinhanca, aceita);
+                recristalizacao(&pop[i], distancias, m, nC, &num, pen, &temp, temperaturaMaxima, arrefecimento, temperaturaMinima, tipoVizinhanca, aceita);
             }
         }
     }

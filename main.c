@@ -9,33 +9,17 @@ int main() {
     int nC,m,numRuns=-1, numIter;
     float distancias[MAX_C][MAX_C], mbf=0;
 
-    int tipoVizinhanca = 1;
-    int aceitaMesmoCusto = 1;
-    int numIterLocal = 10;
+    int tipoVizinhanca;
+    int aceitaMesmoCusto;
+    int numIterLocal;
     char algoritmoEscolhido;
-    int algoritmoHibrido = 1, abordagemHibrido = 2;
+    int algoritmoHibrido, abordagemHibrido;
     Solucao* sol;
     Solucao* melhorSol;
 
-    float temperatura = 1000, arrefecimento = 0.99, temperaturaFinal = 1;
+    float temperaturaMaxima, arrefecimento, temperaturaMinima;
 
     Evolutivo ev;
-
-    /*
-        TIPO RECOMBINACAO - 1 - 1Ponto, 2 - 2Pontos, 3 - Uniforme
-        TIPO MUTACAO - 1 - BitFlip, 2 - Troca
-        TRATAMENTO INVALIDOS (0-Penalizacao, 1-Rep. Aleatoria, 2-Rep. Heuristica)
-        METODO SELECAO 1- TORNEIO 2- ROLETA
-    */
-
-    ev.popsize = 50;
-    ev.pmt = 0.01;
-    ev.prc = 0.7;
-    ev.tsize = 2;
-    ev.tipoRecombinacao  = 1;
-    ev.tipoMutacao = 1;
-    ev.tipoReparacao = 0;
-    ev.metodoSelecao = 1;
 
     Solucao *pop = NULL;
     Solucao *pais = NULL;
@@ -54,8 +38,6 @@ int main() {
     //float pen = 0.0;
 
     srand(time(NULL));
-
-    // GERAR SOLUCAO
 
     sol = malloc(sizeof(Solucao));
     if (sol == NULL) {
@@ -87,10 +69,8 @@ int main() {
         scanf(" %c",&algoritmoEscolhido);
     }
 
-
-
     if (algoritmoEscolhido=='r') {
-        if (lerParametrosRecristalizacao(&temperatura,&arrefecimento,&temperaturaFinal,&tipoVizinhanca,&aceitaMesmoCusto) == 1) {
+        if (lerParametrosRecristalizacao(&temperaturaMaxima,&arrefecimento,&temperaturaMinima,&tipoVizinhanca,&aceitaMesmoCusto) == 1) {
             printf("\nErro a ler os parametros para recristalizacao.");
             return 1;
         }
@@ -105,7 +85,7 @@ int main() {
         filhos = malloc(sizeof(Solucao) * ev.popsize);
         if (!pop || !pais || !filhos) { printf("Erro memoria populacoes\n"); return 1; }
     }else if (algoritmoEscolhido == 'h'){
-        if (lerParametrosHibrido(&ev,&algoritmoHibrido,&abordagemHibrido,&temperatura,&arrefecimento,&temperaturaFinal,&numIterLocal, &aceitaMesmoCusto) == 1) {
+        if (lerParametrosHibrido(&ev,&algoritmoHibrido,&abordagemHibrido,&temperaturaMaxima,&arrefecimento,&temperaturaMinima,&numIterLocal, &aceitaMesmoCusto) == 1) {
             printf("\nErro a ler os parametros para o hibrido.");
             return 1;
         }
@@ -116,115 +96,80 @@ int main() {
         if (!pop || !pais || !filhos) { printf("Erro memoria populacoes\n"); return 1; }
     }
 
-    melhorSol->media = -1; // so para comecar
+
+    // --- ZONA DE PRINTS DOS PARÂMETROS ESCOLHIDOS  ---
+
+    printf("\n==================================================");
+    printf("\nRESUMO DOS PARAMETROS ESCOLHIDOS");
+    printf("\n==================================================");
+    printf("\nNumero de Runs: %d", numRuns);
+    printf("\nNumero de Iteracoes (Globais): %d", numIter);
 
     if (algoritmoEscolhido == 't') {
-        printf("\n---ALGORTIMO TREPA COLINAS ---\n\n Tipo Vizinhanca - ");
-        printf("Troca\n\n");
+        printf("\n\n--- ALGORITMO: TREPA COLINAS ---");
+        printf("\nTipo Vizinhanca: %s", (tipoVizinhanca == 1 ? "Troca" : "BitFlip"));
     }
     else if (algoritmoEscolhido == 'r') {
-        printf("\n---ALGORTIMO RECRISTALIZACAO SIMULADA---\nParametros: \n\nTempInicial = %.5f \nArrefecimento = %.5f \nTempFinal = %.5f\n\n",temperatura,arrefecimento,temperaturaFinal);
-        if (tipoVizinhanca==1)
-            printf("Tipo Vizinhanca - Troca\n\n");
-        else
-            printf("Tipo Vizinhanca - BitFlip\n\n");
+        printf("\n\n--- ALGORITMO: RECRISTALIZACAO SIMULADA ---");
+        printf("\nTemp Maxima: %.5f", temperaturaMaxima);
+        printf("\nTemp Minima: %.5f", temperaturaMinima);
+        printf("\nArrefecimento: %.5f", arrefecimento);
+        printf("\nTipo Vizinhanca: %s", (tipoVizinhanca == 1 ? "Troca" : "BitFlip"));
+        printf("\nAceita Vizinho Mesmo Custo: %s", (aceitaMesmoCusto == 1 ? "Sim" : "Nao"));
     }
-    else if (algoritmoEscolhido == 'e') {
-        printf("\n--- ALGORITMO EVOLUTIVO ---\nParametros: \n\n");
-        printf("Tamanho Populacao = %d\n",ev.popsize);
-        printf("Prob Mutacao = %f\n",ev.pmt);
-        printf("Prob Recombinacao = %f\n",ev.prc);
-        printf("Tamanho Torneio = %d\n\n",ev.tsize );
+    else if (algoritmoEscolhido == 'e' || algoritmoEscolhido == 'h') {
+        if (algoritmoEscolhido == 'e') printf("\n\n--- ALGORITMO: EVOLUTIVO ---");
+        else printf("\n\n--- ALGORITMO: HIBRIDO ---");
 
-        char rec[30];
-        char mut[30];
-        char inv[30];
-        char sel[30];
+        printf("\n\n[Parametros Evolutivos]");
+        printf("\nTamanho Populacao: %d", ev.popsize);
+        printf("\nProb Mutacao: %.4f", ev.pmt);
+        printf("\nProb Recombinacao: %.4f", ev.prc);
+        printf("\nTamanho Torneio: %d", ev.tsize);
 
-        if (ev.tipoRecombinacao == 1)
-            strcpy(rec,"1 Ponto");
-        if (ev.tipoRecombinacao == 2)
-            strcpy(rec,"2 Pontos");
-        if (ev.tipoRecombinacao == 3)
-            strcpy(rec,"Uniforme");
+        // Traduzir Códigos para Texto
+        char rec[30], mut[30], inv[30], sel[30];
 
-        if (ev.tipoMutacao == 1)
-            strcpy(mut,"Bitflip");
-        if (ev.tipoMutacao == 2)
-            strcpy(mut,"Troca");
+        if (ev.tipoRecombinacao == 1) strcpy(rec, "1 Ponto");
+        else if (ev.tipoRecombinacao == 2) strcpy(rec, "2 Pontos");
+        else strcpy(rec, "Uniforme");
 
-        if (ev.tipoReparacao == 0)
-            strcpy(inv,"Penalizacao");
-        if (ev.tipoReparacao == 1)
-            strcpy(inv,"Rep. Aleatoria");
-        if (ev.tipoReparacao == 2)
-            strcpy(inv,"Rep. Heuristica");
+        if (ev.tipoMutacao == 1) strcpy(mut, "Bitflip");
+        else strcpy(mut, "Troca");
 
-        if (ev.metodoSelecao == 1)
-            strcpy(sel,"Torneio");
-        if (ev.metodoSelecao == 2)
-            strcpy(sel,"Roleta");
+        if (ev.tipoReparacao == 0) strcpy(inv, "Penalizacao");
+        else if (ev.tipoReparacao == 1) strcpy(inv, "Rep. Aleatoria");
+        else strcpy(inv, "Rep. Heuristica");
 
-        printf("Tipo Recombinacao - %s\n",rec );
-        printf("Tipo Mutacao - %s\n",mut );
-        printf("Tratamento Invalidos - %s\n\n",inv );
-        printf("Metodo de Selecao - %s\n\n",sel);
+        if (ev.metodoSelecao == 1) strcpy(sel, "Torneio");
+        else strcpy(sel, "Roleta");
 
-        ev.numGenerations = numIter;
-    }else if (algoritmoEscolhido == 'h') {
-        printf("\n--- ALGORITMO HIBRIDO ---\nParametros: \n\n");
-        printf("Tamanho Populacao = %d\n",ev.popsize);
-        printf("Prob Mutacao = %f\n",ev.pmt);
-        printf("Prob Recombinacao = %f\n",ev.prc);
-        printf("Tamanho Torneio = %d\n\n",ev.tsize );
+        printf("\nTipo Recombinacao: %s", rec);
+        printf("\nTipo Mutacao: %s", mut);
+        printf("\nTratamento Invalidos: %s", inv);
+        printf("\nMetodo de Selecao: %s", sel);
 
+        // SECÇÃO ESPECÍFICA DO HÍBRIDO
+        if (algoritmoEscolhido == 'h') {
+            printf("\n\n[Parametros Hibrido - Pesquisa Local]");
+            printf("\nAbordagem: %d", abordagemHibrido);
+            printf("\nAlgoritmo Local: %s", (algoritmoHibrido == 1 ? "Trepa Colinas" : "Recristalizacao Simulada"));
+            printf("\nIteracoes Locais: %d", numIterLocal);
+            printf("\nTipo Vizinhanca Local: %s", (tipoVizinhanca == 1 ? "Troca" : "BitFlip"));
 
-        char rec[30];
-        char mut[30];
-        char inv[30];
-        char sel[30];
-
-        if (ev.tipoRecombinacao == 1)
-            strcpy(rec,"1 Ponto");
-        if (ev.tipoRecombinacao == 2)
-            strcpy(rec,"2 Pontos");
-        if (ev.tipoRecombinacao == 3)
-            strcpy(rec,"Uniforme");
-
-        if (ev.tipoMutacao == 1)
-            strcpy(mut,"Bitflip");
-        if (ev.tipoMutacao == 2)
-            strcpy(mut,"Troca");
-
-        if (ev.tipoReparacao == 0)
-            strcpy(inv,"Penalizacao");
-        if (ev.tipoReparacao == 1)
-            strcpy(inv,"Rep. Aleatoria");
-        if (ev.tipoReparacao == 2)
-            strcpy(inv,"Rep. Heuristica");
-
-        if (ev.metodoSelecao == 1)
-            strcpy(sel,"Torneio");
-        if (ev.metodoSelecao == 2)
-            strcpy(sel,"Roleta");
-
-        printf("Tipo Recombinacao - %s\n",rec );
-        printf("Tipo Mutacao - %s\n",mut );
-        printf("Tratamento Invalidos - %s\n\n",inv );
-        printf("Metodo de Selecao - %s\n\n",sel);
-
-        printf("Abordagem %d\n\n",abordagemHibrido);
-
-        if (algoritmoHibrido == 2) {
-            printf("Algoritmo: Recristalizacao Simulada\n\nTempInicial = %.5f \nArrefecimento = %.5f \nTempFinal = %.5f\n\n",temperatura,arrefecimento,temperaturaFinal);
-        }else {
-            printf("Algoritmo: Trepa Colinas\n\n");
+            if (algoritmoHibrido == 2) { // Se for Recristalização
+                printf("\nTemp Maxima: %.5f", temperaturaMaxima);
+                printf("\nTemp Minima: %.5f", temperaturaMinima);
+                printf("\nArrefecimento: %.5f", arrefecimento);
+                printf("\nAceita Mesmo Custo: %s", (aceitaMesmoCusto == 1 ? "Sim" : "Nao"));
+            }
         }
-
-        ev.numGenerations = numIter;
     }
+    printf("\n==================================================\n\n");
 
-    sleep(2);
+    sleep(2); // para dar tempo para ver os prints de cima
+
+    melhorSol->media = -1; // so para comecar
     for (int i = 0; i < numRuns; i++) {
         geraSolucaoInicial(sol, m, nC);
         int countValidos = 1;
@@ -238,7 +183,7 @@ int main() {
             }
         }else if (algoritmoEscolhido == 'r') {
 
-            if (recristalizacao(sol,distancias,m,nC,&numIterTemp,pen,&countValidos,temperatura,arrefecimento,temperaturaFinal, tipoVizinhanca, aceitaMesmoCusto)!=0) {
+            if (recristalizacao(sol,distancias,m,nC,&numIterTemp,pen,&countValidos,temperaturaMaxima,arrefecimento,temperaturaMinima, tipoVizinhanca, aceitaMesmoCusto)!=0) {
                 printf("ERRO NO ALGORITMO RECRISTALIZACAO SIMULADA\n");
                 return 1;
             }
@@ -252,19 +197,19 @@ int main() {
         }
         else if (algoritmoEscolhido == 'h') {
             // A função escreve a melhor solução da run diretamente em 'sol'
-            geraSolucaoHibrido(sol, distancias, nC, m, pen, ev, pop, pais, filhos, abordagemHibrido, algoritmoEscolhido, temperatura, arrefecimento, temperaturaFinal, numIterLocal, tipoVizinhanca, aceitaMesmoCusto);
+            geraSolucaoHibrido(sol, distancias, nC, m, pen, ev, pop, pais, filhos, abordagemHibrido, algoritmoHibrido, temperaturaMaxima, arrefecimento, temperaturaMinima, numIterLocal, tipoVizinhanca, aceitaMesmoCusto);
 
             //assumimos que a solucao final e válida se usarmos reparação
             if (ev.tipoReparacao > 0)
                 countValidos = numIterTemp + 1;
         }
 
-        //printf("\nRepeticao %d\n",i+1);
-        //printSol(sol,nC);
-        //printf("\nMedia de Distancias: %.2f \n",sol->media);
-        //printf("\nNumero de Iteracoes: %d\n",numIterTemp);
+        printf("\nRepeticao %d\n",i+1);
+        printSol(sol,nC);
+        printf("\nMedia de Distancias: %.2f \n",sol->media);
+        printf("\nNumero de Iteracoes: %d\n",numIterTemp);
 
-        //printf("Percentagem de Invalidos: %.2f\n", ( 1.0 - (float)countValidos / ( (float)numIterTemp + 1.0 ) ) * 100);
+        printf("Percentagem de Invalidos: %.2f\n", ( 1.0 - (float)countValidos / ( (float)numIterTemp + 1.0 ) ) * 100);
 
         mbf+=sol->media;
 
@@ -280,8 +225,11 @@ int main() {
 
     free(sol);
     free(melhorSol);
-    if (algoritmoEscolhido == 'e') {
-        free(pop); free(pais); free(filhos);
+
+    if (algoritmoEscolhido == 'e' || algoritmoEscolhido == 'h') {
+        free(pop);
+        free(pais);
+        free(filhos);
     }
 
     return 0;
